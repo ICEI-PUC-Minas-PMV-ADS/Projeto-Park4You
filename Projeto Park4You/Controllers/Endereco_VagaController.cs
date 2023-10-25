@@ -11,6 +11,8 @@ namespace Projeto_Park4You.Controllers
 {
     public class Endereco_VagaController : Controller
     {
+        [BindProperty]
+        public Endereco_Vaga Endereco_Vaga { get; set; }
         private readonly AppDbContext _context;
 
         public Endereco_VagaController(AppDbContext context)
@@ -18,12 +20,32 @@ namespace Projeto_Park4You.Controllers
             _context = context;
         }
 
+        public IActionResult OnGet()
+        {
+            return View();
+        }
+
         // GET: Endereco_Vaga
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var endereco_vaga = new Endereco_Vaga();
+            endereco_vaga = new Endereco_Vaga();
+
+            if (await TryUpdateModelAsync(endereco_vaga, Endereco_Vaga.GetType(), nameof(Endereco_Vaga)))
+            {
+                _context.endereco_Vagas.Add(endereco_vaga);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View();   
+        }
+       
         public async Task<IActionResult> Index()
         {
             var appDbContext = _context.endereco_Vagas.Include(e => e.cadast_Usuario);
             return View(await appDbContext.ToListAsync());
         }
+        
 
         // GET: Endereco_Vaga/Details/5
         public async Task<IActionResult> Details(int? id)
